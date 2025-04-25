@@ -1,11 +1,13 @@
 <script>
 import "@provetcloud/web-components/lib/Layout";
+
+// TODO: create a default layout for the app
 </script>
 
 <template>
   <div>
     <provet-layout>
-      Welcome
+      <NuxtPage />
     </provet-layout>
   </div>
 </template>

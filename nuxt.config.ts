@@ -19,6 +19,9 @@ export default defineNuxtConfig({
 
   // provetcloud design system
   css: ["@provetcloud/css"],
+  alias: {
+    '@ds': '@provetcloud/web-components/lib/'
+  },
 
   compatibilityDate: "2025-04-25",
 });
