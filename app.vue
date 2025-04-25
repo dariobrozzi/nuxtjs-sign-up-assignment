@@ -1,5 +1,11 @@
+<script>
+import "@provetcloud/web-components/lib/Layout";
+</script>
+
 <template>
   <div>
-    <NuxtWelcome />
+    <provet-layout>
+      Welcome
+    </provet-layout>
   </div>
 </template>
