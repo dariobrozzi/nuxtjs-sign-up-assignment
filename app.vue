@@ -5,6 +5,7 @@ import "@provetcloud/web-components/lib/Layout";
 </script>
 
 <template>
+  <NuxtLoadingIndicator />
   <div>
     <provet-layout>
       <NuxtPage />

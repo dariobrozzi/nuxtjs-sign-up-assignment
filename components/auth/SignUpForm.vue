@@ -26,7 +26,6 @@ const initialFormState = {
   },
   subscribe: {
     value: false,
-    touched: false
   }
 }
 
@@ -56,40 +55,60 @@ const errors = reactive({
   password: computed(() => (formState.password.touched ? resolveFieldError('password', formState.password.value) : ''))
 })
 
-const touch = (field: string) => {
-  formState[field].touched = true
-}
+const invalidForm = computed(() => (!formState.email.value || !formState.password.value || errors.email != '' || errors.password != ''))
 
-const untouch = (field: string) => {
-  formState[field].touched = false
-}
+const setTouch = (field: string, state: boolean = true) => {
+  formState[field].touched = state;
+};
 
 const resetForm = () => {
-  formState.email.value = ''
-  formState.password.value = ''
-  formState.email.touched = false
-  formState.password.touched = false
-}
+  formState.email.value = '';
+  formState.email.touched = false;
+  formState.password.value = '';
+  formState.password.touched = false;
+  formState.subscribe.value = false;
+};
 
-const onSubmit = () => {
-  if (!(formState.email.value || formState.password.value) || (errors.email || errors.password)) {
+const onSubmit = async () => {
+  if (invalidForm.value) {
     return
   }
 
-  // TODO: Call to sign-up API and manage the response
-  signedUp.value = true
+  const body = {
+    email: formState.email.value,
+    password: formState.password.value,
+    subscribe: formState.subscribe.value
+  }
 
-  emailInput.value.focus()
-  resetForm()
+  try {
+    await $fetch('/api/signup', {
+      method: 'POST',
+      body
+    }).then((response) => {
+      if (response.statusCode === 200) {
+        signedUp.value = true
+        resetForm()
+      } else {
+        throw new Error(FIXTURES.auth.signUp.errorMessage)
+      }
+    })
+  } catch (error) {
+    // TODO: Display error message to the user (maybe using existent banner)
+    console.error('Sign up failed:', error);
+  }
 }
 
 const toggleShowPassword = () => {
   showPassword.value = !showPassword.value
 }
 
+let firstRender = true
+
 watchEffect(() => {
-  if (emailInput.value) {
+  if (emailInput.value && firstRender) {
     emailInput.value.focus()
+    // prevent focus on re-render
+    firstRender = false
   }
 })
 </script>
@@ -105,14 +124,14 @@ watchEffect(() => {
         <provet-stack>
 
           <provet-input v-model="formState.email.value" type="email" id="sign-up-email" name="email" ref="emailRef"
-            label="Email" :error="errors.email" placeholder="user@example.com" expand @blur="() => touch('email')"
-            @change="() => touch('email')" @focus="() => untouch('email')" />
+            label="Email" :error="errors.email" placeholder="user@example.com" expand @blur="() => setTouch('email')"
+            @input="() => setTouch('email')" @focus="() => setTouch('email', false)" />
 
           <div :class="['password-input-holder', { 'password-input-holder--with-error': errors.password }]">
             <provet-input v-model="formState.password.value" id="sign-up-password" name="password" label="Password"
-              placeholder="••••••••" :hint="FIXTURES.auth.passwordHint" @blur="() => touch('password')"
+              placeholder="••••••••" :hint="FIXTURES.auth.passwordHint" @blur="() => setTouch('password')"
               :type="showPassword ? 'text' : 'password'" :error="errors.password" expand
-              @change="() => touch('password')" @focus="() => untouch('password')" />
+              @input="() => setTouch('password')" @focus="() => setTouch('password', false)" />
 
             <provet-button square size="s" aria-describedby="tooltip" @click="() => toggleShowPassword()"
               class="reveal-password-button">
@@ -127,8 +146,7 @@ watchEffect(() => {
           <provet-checkbox v-model="formState.subscribe.value" type="checkbox" id="sign-up-subscribe" name="subscribe"
             size="s" :label="FIXTURES.auth.signUp.subscribeCheckbox" value="Value"></provet-checkbox>
 
-          <provet-button type="submit" variant="primary"
-            :disabled="!formState.password.value || !formState.password.value" expand>Sign up</provet-button>
+          <provet-button type="submit" variant="primary" :disabled="invalidForm" expand>Sign up</provet-button>
         </provet-stack>
       </form>
     </provet-card>
