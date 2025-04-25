@@ -8,7 +8,7 @@
 
 ## Resources
 
-- [Provet Cloud Design System]([https://provetcloud.design/])
+[Provet Cloud Design System](https://provetcloud.design/)
 
 ## Setup
 
