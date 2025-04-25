@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import "@ds/Stack";
-import "@ds/Card";
-import "@ds/Input";
-import "@ds/Button";
 import "@ds/Banner";
+import "@ds/Button";
+import "@ds/Card";
+import "@ds/Checkbox";
 import "@ds/Icon";
+import "@ds/Input";
+import "@ds/Stack";
 import "@ds/Tooltip";
 
 import FIXTURES from "~/constants/fixtures";
@@ -23,6 +24,10 @@ const initialFormState = {
     value: '',
     touched: false
   },
+  subscribe: {
+    value: false,
+    touched: false
+  }
 }
 
 type FieldType = keyof typeof initialFormState;
@@ -118,6 +123,9 @@ watchEffect(() => {
               {{ `${showPassword ? 'Hide' : 'Reveal'} password` }}
             </provet-tooltip>
           </div>
+
+          <provet-checkbox v-model="formState.subscribe.value" type="checkbox" id="sign-up-subscribe" name="subscribe"
+            size="s" :label="FIXTURES.auth.signUp.subscribeCheckbox" value="Value"></provet-checkbox>
 
           <provet-button type="submit" variant="primary"
             :disabled="!formState.password.value || !formState.password.value" expand>Sign up</provet-button>
