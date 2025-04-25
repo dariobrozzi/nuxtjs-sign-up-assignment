@@ -93,6 +93,3 @@ sw.*
 
 # Vercel
 .vercel
-
-# Frozen lockfiles
-package-lock.json
