@@ -4,11 +4,14 @@ import "@ds/Card";
 import "@ds/Input";
 import "@ds/Button";
 import "@ds/Banner";
+import "@ds/Icon";
+import "@ds/Tooltip";
 
 import FIXTURES from "~/constants/fixtures";
 import { EMAIL_EXPRESSION, PASSWORD_EXPRESSION } from "~/constants/expressions";
 
 const signedUp = ref(false);
+const showPassword = ref(false);
 const emailInput = useTemplateRef('emailRef')
 
 const initialFormState = {
@@ -68,11 +71,15 @@ const onSubmit = () => {
     return
   }
 
-  // TODO: Call sign up API
+  // TODO: Call to sign-up API and manage the response
   signedUp.value = true
 
   emailInput.value.focus()
   resetForm()
+}
+
+const toggleShowPassword = () => {
+  showPassword.value = !showPassword.value
 }
 
 watchEffect(() => {
@@ -84,16 +91,34 @@ watchEffect(() => {
 
 <template>
   <provet-stack style="max-width: 340px; margin: var(--n-space-xl) auto">
-    <provet-banner v-if="signedUp" shadow variant="success">{{ FIXTURES.auth.signUp.successMessage }}</provet-banner>
+    <provet-banner v-if="signedUp" shadow variant="success">
+      {{ FIXTURES.auth.signUp.successMessage }}
+    </provet-banner>
+
     <provet-card padding="l">
       <form action="#" @submit.prevent="onSubmit">
         <provet-stack>
-          <provet-input type="email" id="sign-up-email" name="email" ref="emailRef" label="Email"
-            v-model="formState.email.value" @blur="() => touch('email')" @change="() => touch('email')"
-            @focus="() => untouch('email')" :error="errors.email" placeholder="user@example.com" expand />
-          <provet-input id="sign-up-password" name="password" label="Password" placeholder="••••••••"
-            :hint="FIXTURES.auth.passwordHint" v-model="formState.password.value" @blur="() => touch('password')"
-            @change="() => touch('password')" @focus="() => untouch('password')" :error="errors.password" expand />
+
+          <provet-input v-model="formState.email.value" type="email" id="sign-up-email" name="email" ref="emailRef"
+            label="Email" :error="errors.email" placeholder="user@example.com" expand @blur="() => touch('email')"
+            @change="() => touch('email')" @focus="() => untouch('email')" />
+
+          <div :class="['password-input-holder', { 'password-input-holder--with-error': errors.password }]">
+            <provet-input v-model="formState.password.value" id="sign-up-password" name="password" label="Password"
+              placeholder="••••••••" :hint="FIXTURES.auth.passwordHint" @blur="() => touch('password')"
+              :type="showPassword ? 'text' : 'password'" :error="errors.password" expand
+              @change="() => touch('password')" @focus="() => untouch('password')" />
+
+            <provet-button square size="s" aria-describedby="tooltip" @click="() => toggleShowPassword()"
+              class="reveal-password-button">
+              <provet-icon :name="`interface-edit-${showPassword ? 'off' : 'on'}`" />
+            </provet-button>
+
+            <provet-tooltip id="tooltip" position="inline-end">
+              {{ `${showPassword ? 'Hide' : 'Reveal'} password` }}
+            </provet-tooltip>
+          </div>
+
           <provet-button type="submit" variant="primary"
             :disabled="!formState.password.value || !formState.password.value" expand>Sign up</provet-button>
         </provet-stack>
@@ -101,3 +126,20 @@ watchEffect(() => {
     </provet-card>
   </provet-stack>
 </template>
+
+<style scoped>
+.password-input-holder {
+  position: relative;
+}
+
+.reveal-password-button {
+  position: absolute;
+  right: calc(var(--n-space-s)/2);
+  bottom: calc(var(--n-space-s)/2);
+}
+
+.password-input-holder--with-error .reveal-password-button {
+  /* input internal spacing + error caption */
+  bottom: calc(var(--n-space-s) + var(--n-space-s) + var(--n-font-size-s));
+}
+</style>
