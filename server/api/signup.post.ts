@@ -1,4 +1,3 @@
-import { subscribe } from '@provetcloud/web-components/lib/src/localization/translation'
 import { z } from 'zod'
 import { PASSWORD_EXPRESSION } from '~/constants/expressions'
 
