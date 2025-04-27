@@ -43,10 +43,15 @@ If the product intends to support more languages, it's better to setup a `i18n` 
 - Added call to the API.
 - Some refactors and cleanup.
 
+### [refactor(sign-up): create form composable and service](https://github.com/dariobrozzi/nuxtjs-sign-up-assignment/commit/3d18376e4d5abe4ea05332f5e98f0d56f9073a56)
+
+- Created a `useAuthForm` composable grouping functionality and states related to validation.
+- Moved the `API` call to services.
+- Improved user message.
+
 ## Room for improvements
 
 - Add unit tests.
-- Refactor signup functions to `utils` or `useAuth` composable.
 - Split password input into a new component.
 
 ## Resources
